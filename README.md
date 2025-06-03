@@ -2,10 +2,6 @@
 
 > **Note:** This package is a fork of [contacts_service](https://pub.dev/packages/contacts_service) | Flutter package for latest support and enhanced functionality.
 
-[![pub package](https://img.shields.io/pub/v/contacts_service_plus.svg)](https://pub.dartlang.org/packages/contacts_service_plus)
-[![Build Status](https://travis-ci.com/lukasgit/flutter_contacts.svg?branch=master)](https://travis-ci.com/lukasgit/flutter_contacts)
-[![Coverage Status](https://coveralls.io/repos/github/clovisnicolas/flutter_contacts/badge.svg?branch=master)](https://coveralls.io/github/clovisnicolas/flutter_contacts?branch=master)
-
 A Flutter plugin to access and manage the device's native contacts with full CRUD operations support.
 
 ## Features
