@@ -20,7 +20,7 @@ flutter:
         package: flutter.plugins.contactsservice.contactsservice
         pluginClass: ContactsServicePlugin
       ios:
-        pluginClass: ContactsServicePlugin
+        pluginClass: ContactsServicePlusPlugin
 
 dev_dependencies:
   flutter_test:
