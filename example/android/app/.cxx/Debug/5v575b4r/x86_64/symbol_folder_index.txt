@@ -1,0 +1,1 @@
+D:\.flutter\packages\flutter_contacts\example\build\app\intermediates\cxx\Debug\5v575b4r\obj\x86_64
