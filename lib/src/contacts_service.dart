@@ -1,3 +1,4 @@
+// filepath: /Users/raiymbek/flutter_projects/flutter_contacts_plus/lib/src/contacts_service.dart
 import 'dart:async';
 
 import 'package:collection/collection.dart';
@@ -117,6 +118,36 @@ class ContactsService {
       },
     );
     return _handleFormOperation(result);
+  }
+
+  /// Opens a native contact preview page for the provided contact data.
+  /// This is useful for previewing contact information without needing
+  /// the contact to exist in the device's contact database.
+  /// The contact will be displayed in read-only mode with actions like call/message available.
+  /// iOS only - this method will throw on Android.
+  static Future<void> openContactPreview(Contact contact,
+      {bool iOSLocalizedLabels = true}) async {
+    dynamic result = await _channel.invokeMethod(
+      'openContactPreview',
+      <String, dynamic>{
+        'contact': Contact._toMap(contact),
+        'iOSLocalizedLabels': iOSLocalizedLabels,
+      },
+    );
+    
+    if (result is int) {
+      switch (result) {
+        case 1:
+          throw FormOperationException(
+              errorCode: FormOperationErrorCode.FORM_OPERATION_CANCELED);
+        case 2:
+          throw FormOperationException(
+              errorCode: FormOperationErrorCode.FORM_COULD_NOT_BE_OPEN);
+        default:
+          throw FormOperationException(
+              errorCode: FormOperationErrorCode.FORM_OPERATION_UNKNOWN_ERROR);
+      }
+    }
   }
 
   // Displays the device/native contact picker dialog and returns the contact selected by the user

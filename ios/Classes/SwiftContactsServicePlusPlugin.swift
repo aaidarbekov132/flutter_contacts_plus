@@ -90,6 +90,12 @@ public class SwiftContactsServicePlusPlugin: NSObject, FlutterPlugin, CNContactV
             localizedLabels = arguments["iOSLocalizedLabels"] as! Bool
             self.result = result
             _ = openExistingContact(contact: contact, result: result)
+        case "openContactPreview":
+            let arguments = call.arguments as! [String : Any]
+            let contact = arguments["contact"] as! [String : Any]
+            localizedLabels = arguments["iOSLocalizedLabels"] as! Bool
+            self.result = result
+            _ = openContactPreview(contact: contact, result: result)
         case "openDeviceContactPicker":
             let arguments = call.arguments as! [String : Any]
             openDeviceContactPicker(arguments: arguments, result: result);
@@ -299,6 +305,78 @@ public class SwiftContactsServicePlusPlugin: NSObject, FlutterPlugin, CNContactV
             return nil
          }
      }
+
+    func openContactPreview(contact: [String:Any], result: FlutterResult ) ->  [String:Any]? {
+         do {
+            let cnContact = dictionaryToContact(dictionary: contact)
+            let viewController = CNContactViewController(for: cnContact)
+            
+            viewController.allowsEditing = false
+            viewController.allowsActions = true
+            
+            let backTitle = contact["backTitle"] as? String
+            let closeTitle = backTitle == nil ? "Close" : backTitle!
+            
+            let closeButton = UIBarButtonItem(title: closeTitle, style: .plain, target: self, action: #selector(cancelContactPreview))
+            closeButton.tintColor = UIColor.white
+            
+            if #available(iOS 13.0, *) {
+                closeButton.setTitleTextAttributes([
+                    NSAttributedString.Key.foregroundColor: UIColor.white,
+                    NSAttributedString.Key.strokeColor: UIColor.white,
+                    NSAttributedString.Key.strokeWidth: -1.0
+                ], for: .normal)
+            } else {
+                closeButton.setTitleTextAttributes([
+                    NSAttributedString.Key.foregroundColor: UIColor.white,
+                    NSAttributedString.Key.strokeColor: UIColor.white,
+                    NSAttributedString.Key.strokeWidth: -1.0
+                ], for: .normal)
+            }
+            
+            viewController.navigationItem.rightBarButtonItem = closeButton
+             
+            DispatchQueue.main.async {
+                let navigation = UINavigationController(rootViewController: viewController)
+                
+                var currentViewController = UIApplication.shared.keyWindow?.rootViewController
+                while let nextView = currentViewController?.presentedViewController {
+                    currentViewController = nextView
+                }
+                
+                let activityIndicatorView = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.gray)
+                activityIndicatorView.frame = (UIApplication.shared.keyWindow?.frame)!
+                activityIndicatorView.startAnimating()
+                activityIndicatorView.backgroundColor = UIColor.white
+                navigation.view.addSubview(activityIndicatorView)
+                
+                currentViewController!.present(navigation, animated: true, completion: nil)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+                    activityIndicatorView.removeFromSuperview()
+                }
+            }
+            return nil
+         } catch {
+            NSLog(error.localizedDescription)
+            result(SwiftContactsServicePlusPlugin.FORM_COULD_NOT_BE_OPEN)
+            return nil
+         }
+     }
+
+    @objc func cancelContactPreview() {
+        if let result = self.result {
+            DispatchQueue.main.async {
+                var currentViewController = UIApplication.shared.keyWindow?.rootViewController
+                while let nextView = currentViewController?.presentedViewController {
+                    currentViewController = nextView
+                }
+                currentViewController?.dismiss(animated: true, completion: nil)
+            }
+            result(SwiftContactsServicePlusPlugin.FORM_OPERATION_CANCELED)
+            self.result = nil
+        }
+    }
      
     func openDeviceContactPicker(arguments: [String:Any], result: @escaping FlutterResult) {
         localizedLabels = arguments["iOSLocalizedLabels"] as! Bool
