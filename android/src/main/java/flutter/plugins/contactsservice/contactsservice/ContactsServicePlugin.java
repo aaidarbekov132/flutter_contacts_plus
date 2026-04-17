@@ -112,7 +112,7 @@ public class ContactsServicePlugin implements MethodCallHandler, FlutterPlugin, 
                 if (this.addContact(contact)) {
                     result.success(null);
                 } else {
-                    result.error(null, "Failed to add the contact", null);
+                    result.error("ADD_CONTACT_FAILED", "Failed to add the contact", null);
                 }
                 break;
             }
@@ -121,7 +121,7 @@ public class ContactsServicePlugin implements MethodCallHandler, FlutterPlugin, 
                 if (this.deleteContact(contact)) {
                     result.success(null);
                 } else {
-                    result.error(null, "Failed to delete the contact, make sure it has a valid identifier", null);
+                    result.error("DELETE_CONTACT_FAILED", "Failed to delete the contact, make sure it has a valid identifier", null);
                 }
                 break;
             }
@@ -130,7 +130,7 @@ public class ContactsServicePlugin implements MethodCallHandler, FlutterPlugin, 
                 if (this.updateContact(contact)) {
                     result.success(null);
                 } else {
-                    result.error(null, "Failed to update the contact, make sure it has a valid identifier", null);
+                    result.error("UPDATE_CONTACT_FAILED", "Failed to update the contact, make sure it has a valid identifier", null);
                 }
                 break;
             }
@@ -791,6 +791,7 @@ public class ContactsServicePlugin implements MethodCallHandler, FlutterPlugin, 
             contentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
             return true;
         } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to add contact", e);
             return false;
         }
     }
